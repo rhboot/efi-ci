@@ -7,9 +7,10 @@
 #
 
 set -eu
+set -x
 
 usage() {
-    echo usage: $1 --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --pr-sha '<commit_id>' --test_subject '<test_subject>'
+    echo usage: $1 --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --pr-sha '<commit_id>' --test-subject '<test_subject>'
     exit $2
 }
 
@@ -46,7 +47,7 @@ while [[ $# > 0 ]] ; do
             commit_id="$2"
             shift
             ;;
-        " --test_subject ")
+        " --test-subject ")
             test_subject="$2"
             shift
             ;;
