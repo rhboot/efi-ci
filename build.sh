@@ -10,13 +10,25 @@ set -eu
 set -x
 
 usage() {
-    echo usage: $1 --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --pr-sha '<commit_id>' --test-subject '<test_subject>'
+    echo usage: $1 --event-type 'push|pull_request' --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --commit-range '<commit_range>' --commit '<commid_id>' --pull-request 'true|false' --pr-sha '<pr_commit_id>' --pr-branch '<pr_branch>'  --test-subject '<test_subject>'
     exit $2
 }
 
+remote_has_revision() {
+    local remote="${1}" && shift
+    local revision="${1}" && shift
+
+    git show-ref -q "${remote:+${remote}/}${revision}"
+}
+
+declare event_type=""
 declare origin_branch=""
 declare origin_repo=""
-declare remote_repo=""
+declare commit_id=""
+declare commit_range=""
+declare pr="false"
+declare pr_repo=""
+declare pr_branch=""
 declare pr_sha=""
 declare test_subject=""
 
@@ -31,6 +43,10 @@ while [[ $# > 0 ]] ; do
         " --help "|" -h "|" -? ")
             usage $0 0
             ;;
+        " --event-type ")
+            event_type="$2"
+            shift
+            ;;
         " --branch ")
             origin_branch="$2"
             shift
@@ -39,12 +55,28 @@ while [[ $# > 0 ]] ; do
             origin_repo="$2"
             shift
             ;;
+        " --commit ")
+            commit_id="$2"
+            shift
+            ;;
+        " --commit-range ")
+            commit_range="$2"
+            shift
+            ;;
+        " --pull-request "|" --pr ")
+            pr="$2"
+            shift
+            ;;
         " --remote ")
-            remote_repo="$2"
+            pr_repo="$2"
             shift
             ;;
         " --pr-sha ")
-            commit_id="$2"
+            pr_sha="$2"
+            shift
+            ;;
+        " --pr-branch ")
+            pr_branch="$2"
             shift
             ;;
         " --test-subject ")
@@ -70,12 +102,22 @@ do_test() {
 
     cd "${subject}"
     if [[ "${do_fetch}" = yes ]] ; then
-        git fetch origin
-        git reset --hard origin/master
+        if [[ "${event_type}" = "pull_request" ]] ; then
+            git remote add remote "https://github.com/${remote_repo}"
+            git fetch remote
+            if remote_has_ref remote "${pr_sha}" ; then
+                git checkout -f "remote/${pr_sha}"
+            elif remote_has_ref remote "${pr_branch}" ; then
+                git checkout -f "remote/${pr_branch}"
+            fi
+        elif [[ "${event_type}" = "push" ]] ; then
+            git fetch origin
+            git reset --hard "origin/${origin_branch}"
+        fi
     fi
     make clean all
     if [[ "${install}" = yes ]] ; then
-        make install
+        make PREFIX=/usr install
     fi
     cd ..
 }
@@ -101,11 +143,4 @@ dbxtool|efibootmgr)
     ;;
 esac
 
-cd /root/"${test_subject}"
-if [[ -n "${remote_repo}" ]] ; then
-    git remote add remote https://github.com/${remote_repo}
-    git fetch remote
-    git checkout -f ${commit_id}
-fi
-cd ..
-do_test "${test_subject}" no no
+do_test "${test_subject}" yes yes
