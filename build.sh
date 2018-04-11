@@ -73,7 +73,11 @@ do_test() {
         git fetch origin
         git reset --hard origin/master
     fi
-    make clean all install
+    make clean all
+    if [[ "${install}" = yes ]] ; then
+        make install
+    fi
+    cd ..
 }
 
 case "${test_subject}" in
