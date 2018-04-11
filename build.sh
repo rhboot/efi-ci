@@ -103,7 +103,7 @@ do_test() {
     cd "${subject}"
     if [[ "${do_fetch}" = yes ]] ; then
         if [[ "${event_type}" = "pull_request" ]] ; then
-            git remote add remote "https://github.com/${remote_repo}"
+            git remote add remote "https://github.com/${pr_repo}"
             git fetch remote
             if remote_has_ref remote "${pr_sha}" ; then
                 git checkout -f "remote/${pr_sha}"
