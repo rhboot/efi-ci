@@ -14,7 +14,7 @@ usage() {
     exit $2
 }
 
-remote_has_revision() {
+remote_has_ref() {
     local remote="${1}" && shift
     local revision="${1}" && shift
 
@@ -103,12 +103,16 @@ do_test() {
     cd "${subject}"
     if [[ "${do_fetch}" = yes ]] ; then
         if [[ "${event_type}" = "pull_request" ]] ; then
-            git remote add remote "https://github.com/${pr_repo}"
-            git fetch remote
-            if remote_has_ref remote "${pr_sha}" ; then
-                git checkout -f "remote/${pr_sha}"
-            elif remote_has_ref remote "${pr_branch}" ; then
-                git checkout -f "remote/${pr_branch}"
+            git remote add remote "https://github.com/${pr_repo%%/*}/${subject}"
+            if ! git fetch remote ; then
+                git remote set-url remote "https://github.com/${origin_repo%%/*}/${subject}"
+            fi
+            if git fetch remote ; then
+                if remote_has_ref remote "${pr_sha}" ; then
+                    git checkout -f "remote/${pr_sha}"
+                elif remote_has_ref remote "${pr_branch}" ; then
+                    git checkout -f "remote/${pr_branch}"
+                fi
             fi
         elif [[ "${event_type}" = "push" ]] ; then
             git fetch origin
