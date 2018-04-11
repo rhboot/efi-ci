@@ -2,7 +2,7 @@ FROM fedora:rawhide
 MAINTAINER Peter Jones <pjones@redhat.com>
 
 RUN dnf --nodocs -y --best --allowerasing install dnf-plugins-core git make popt-devel @buildsys-build
-RUN dnf --nodocs -y --best --allowerasing builddep efivar
+RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi
 RUN dnf -y clean all
 ADD setup.sh /root/setup.sh
 ADD build.sh /root/build.sh
