@@ -7,7 +7,10 @@
 #
 
 set -eu
-set -x
+#set -x
+
+export EFIDIR=test
+export ENABLE_HTTPBOOT=1
 
 usage() {
     echo usage: $1 --event-type 'push|pull_request' --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --commit-range '<commit_range>' --commit '<commid_id>' --pull-request 'true|false' --pr-sha '<pr_commit_id>' --pr-branch '<pr_branch>'  --test-subject '<test_subject>'
@@ -116,18 +119,23 @@ do_test() {
             fi
         elif [[ "${event_type}" = "push" ]] ; then
             git fetch origin
-            git reset --hard "origin/${origin_branch}"
+            # git checkout -f "origin/${origin_branch}" --
+            git reset --hard "origin/${origin_branch}" --
         fi
     fi
-    make clean all
+    make PREFIX=/usr LIBDIR=/usr/lib64 clean all
     if [[ "${install}" = yes ]] ; then
-        make PREFIX=/usr install
+        make PREFIX=/usr LIBDIR=/usr/lib64 install
+        if [[ "${subject}" = gnu-efi ]] ; then
+            mkdir -p /usr/lib64/gnuefi
+            mv /usr/lib*/crt0-efi-*.o /usr/lib*/elf_*_efi.lds /usr/lib64/gnuefi/
+        fi
     fi
     cd ..
 }
 
 case "${test_subject}" in
-efivar|pesign)
+efivar|pesign|gnu-efi)
     ;;
 shim)
     do_test pesign yes yes
