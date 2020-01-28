@@ -1,15 +1,17 @@
 
-USER	?= vathpela
+USER	?= pjones
+ACCOUNT	?= vathpela
 DISTRO	?= f32
-TAG	?= v0
-IMAGE	?= $(USER)/efi-ci-$(DISTRO):$(TAG)
+TAG	?=
+LOCAL_IMAGE ?= $(USER)/efi-ci-$(DISTRO)$(TAG)
+IMAGE ?= $(ACCOUNT)/efi-ci-$(DISTRO)$(TAG)
 
 all : snapshot upload
 
 snapshot:
-	podman build -f Dockerfile-$(DISTRO) -t $(IMAGE) .
+	podman build -f Dockerfile-$(DISTRO) -t $(LOCAL_IMAGE) .
 
 upload:
-	podman push $(IMAGE) docker://docker.io/$(IMAGE)
+	podman push $(LOCAL_IMAGE) docker://docker.io/$(IMAGE)
 
 .PHONY: all snapshot upload

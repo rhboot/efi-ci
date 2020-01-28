@@ -48,6 +48,7 @@ cd ..
 git clone https://github.com/rhboot/shim
 cd shim
 git config --local --add shim.efidir test
+mkdir build-aa64 build-arm build-ia32 build-x64 
 make clean
 cd ..
 
