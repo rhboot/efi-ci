@@ -1,0 +1,17 @@
+FROM fedora:31
+MAINTAINER Peter Jones <pjones@redhat.com>
+
+RUN dnf --nodocs -y --best --allowerasing install @buildsys-build dnf-plugins-core git make popt-devel nss-devel nspr-devel gettext elfutils-libelf-devel
+RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign
+RUN dnf -y clean all
+ADD setup.sh /root/setup.sh
+ADD build.sh /root/build.sh
+
+RUN rm -rf /usr/share/doc/* /usr/share/man/*
+
+RUN mkdir -p /root
+WORKDIR /root
+
+ENV PREFIX=/usr
+
+RUN /root/setup.sh

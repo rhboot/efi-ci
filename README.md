@@ -12,8 +12,7 @@ specifies.
 
 The workflow for updating the Travis docker image is:
 
-    vim build-docker.sh
-    ./build-docker.sh
+    make DISTRO=f32
 
     cd ../project
     git checkout -b travis
