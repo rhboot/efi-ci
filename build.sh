@@ -8,9 +8,8 @@
 # shellcheck disable=SC2034
 
 set -eu
+echo "${0}" "${@}"
 set -x
-echo "${1}" "${@}"
-set +x
 
 export EFIDIR=test
 export ENABLE_HTTPBOOT=1
