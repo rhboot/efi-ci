@@ -5,6 +5,7 @@
 #
 # Distributed under terms of the GPLv3 license.
 #
+# shellcheck disable=SC2034
 
 set -eu
 #set -x
@@ -13,8 +14,8 @@ export EFIDIR=test
 export ENABLE_HTTPBOOT=1
 
 usage() {
-    echo usage: $1 --event-type 'push|pull_request' --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --commit-range '<commit_range>' --commit '<commid_id>' --pull-request 'true|false' --pr-sha '<pr_commit_id>' --pr-branch '<pr_branch>'  --test-subject '<test_subject>'
-    exit $2
+    echo usage: "$1" --event-type 'push|pull_request' --branch '<origin_branch>' --repo '<origin_repo>' --remote '<remote_repo>' --commit-range '<commit_range>' --commit '<commid_id>' --pull-request 'true|false' --pr-sha '<pr_commit_id>' --pr-branch '<pr_branch>'  --test-subject '<test_subject>'
+    exit "$2"
 }
 
 remote_has_ref() {
@@ -35,16 +36,14 @@ declare pr_branch=""
 declare pr_sha=""
 declare test_subject=""
 
-let n=0 || :
-
 if [[ $# -le 1 ]] ; then
-    usage $0 1
+    usage "$0" 1
 fi
 
-while [[ $# > 0 ]] ; do
+while [[ $# -gt 0 ]] ; do
     case " $1 " in
         " --help "|" -h "|" -? ")
-            usage $0 0
+            usage "$0" 0
             ;;
         " --event-type ")
             event_type="$2"
@@ -87,7 +86,7 @@ while [[ $# > 0 ]] ; do
             shift
             ;;
         *)
-            usage $0 1
+            usage "$0" 1
             ;;
     esac
     shift
