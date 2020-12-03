@@ -16,21 +16,9 @@ make clean all
 make clean
 cd ..
 
-git clone https://github.com/rhboot/dbxtool
-cd dbxtool
-git config --local --add dbxtool.efidir test
-make clean
-cd ..
-
 git clone https://github.com/rhboot/efibootmgr
 cd efibootmgr
 git config --local --add efibootmgr.efidir test
-make clean
-cd ..
-
-git clone https://github.com/rhboot/fwupdate
-cd fwupdate
-git config --local --add fwupdate.efidir test
 make clean
 cd ..
 

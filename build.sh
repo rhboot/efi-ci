@@ -145,12 +145,7 @@ shim)
     do_test pesign yes yes
     do_test gnu-efi yes yes
     ;;
-fwupdate)
-    do_test efivar yes yes
-    do_test pesign yes yes
-    do_test gnu-efi yes yes
-    ;;
-dbxtool|efibootmgr)
+efibootmgr)
     do_test efivar yes yes
     ;;
 *)
