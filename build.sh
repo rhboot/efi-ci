@@ -111,8 +111,12 @@ do_test() {
             fi
             if git fetch remote ; then
                 if remote_has_ref remote "${pr_sha}" ; then
+                    git clean -x -f
+                    git clean -X -f
                     git checkout -f "remote/${pr_sha}"
                 elif remote_has_ref remote "${pr_branch}" ; then
+                    git clean -x -f
+                    git clean -X -f
                     git checkout -f "remote/${pr_branch}"
                 fi
             fi
