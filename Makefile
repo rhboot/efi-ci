@@ -9,7 +9,7 @@ IMAGE ?= $(ACCOUNT)/efi-ci-$(DISTRO)$(TAG)
 all : snapshot upload
 
 snapshot:
-	podman build -f Dockerfile-$(DISTRO) -t $(LOCAL_IMAGE) .
+	podman build -f Containerfile-$(DISTRO) -t $(LOCAL_IMAGE) .
 
 upload:
 	podman push $(LOCAL_IMAGE) docker://docker.io/$(IMAGE)
