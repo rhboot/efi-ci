@@ -106,9 +106,9 @@ do_test() {
     cd "${subject}"
     if [[ "${do_fetch}" = yes ]] ; then
         if [[ "${event_type}" = "pull_request" ]] ; then
-            git remote add remote "https://github.com/${pr_repo%/*}/${subject}"
+            git remote add remote "https://github.com/${pr_repo%%/*}/${subject}"
             if ! git fetch remote ; then
-                git remote set-url remote "https://github.com/${origin_repo%/*}/${subject}"
+                git remote set-url remote "https://github.com/${origin_repo%%/*}/${subject}"
             fi
             if git fetch remote ; then
                 if remote_has_ref remote "${pr_sha}" ; then
