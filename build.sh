@@ -11,6 +11,8 @@ set -eu
 echo "${0}" "${@}"
 set -x
 
+cd /root
+
 export EFIDIR=test
 export ENABLE_HTTPBOOT=1
 
