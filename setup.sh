@@ -7,6 +7,7 @@
 #
 
 set -eu
+set -x
 
 cd /root
 
