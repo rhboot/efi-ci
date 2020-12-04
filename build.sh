@@ -26,6 +26,7 @@ remote_has_ref() {
     git show-ref -q "${remote:+${remote}/}${revision}"
 }
 
+declare server_url="https://github.com"
 declare event_type=""
 declare origin_branch=""
 declare origin_repo=""
@@ -36,6 +37,7 @@ declare pr_repo=""
 declare pr_branch=""
 declare pr_sha=""
 declare test_subject=""
+declare GITHUB_ACTIONS="false"
 
 if [[ $# -le 1 ]] ; then
     usage "$0" 1
@@ -86,6 +88,14 @@ while [[ $# -gt 0 ]] ; do
             test_subject="$2"
             shift
             ;;
+        " --github-actions ")
+            GITHUB_ACTIONS="$2"
+            shift
+            ;;
+        " --server-url ")
+            server_url="$2"
+            shift
+            ;;
         *)
             usage "$0" 1
             ;;
@@ -98,17 +108,31 @@ if [[ -z "${test_subject}" ]] ; then
     exit 1
 fi
 
+if [[ "${GITHUB_ACTIONS}" = true ]] ; then
+    if [[ -z "${pr_branch}" ]] ; then
+        pr_branch="${commit_id##*/}"
+    fi
+    if [[ -z "${origin_branch}" ]] ; then
+        origin_branch="${commit_id##*/}"
+    fi
+fi
+
 do_test() {
     local subject="${1}" && shift
     local install="${1}" && shift
     local do_fetch="${1}" && shift
+    if [[ $# -gt 0 ]] ; then
+        local use_branch="${1}" && shift
+    else
+        local use_branch="${origin_branch}"
+    fi
 
     cd "${subject}"
     if [[ "${do_fetch}" = yes ]] ; then
         if [[ "${event_type}" = "pull_request" ]] ; then
-            git remote add remote "https://github.com/${pr_repo%%/*}/${subject}"
+            git remote add remote "${server_url}/${pr_repo%%/*}/${subject}"
             if ! git fetch remote ; then
-                git remote set-url remote "https://github.com/${origin_repo%%/*}/${subject}"
+                git remote set-url remote "${server_url}/${origin_repo%%/*}/${subject}"
             fi
             if git fetch remote ; then
                 if remote_has_ref remote "${pr_sha}" ; then
@@ -123,8 +147,7 @@ do_test() {
             fi
         elif [[ "${event_type}" = "push" ]] ; then
             git fetch origin
-            # git checkout -f "origin/${origin_branch}" --
-            git reset --hard "origin/${origin_branch}" --
+            git reset --hard "origin/${use_branch}" --
         fi
     fi
     make PREFIX=/usr LIBDIR=/usr/lib64 clean all
@@ -142,11 +165,11 @@ case "${test_subject}" in
 efivar|pesign|gnu-efi)
     ;;
 shim)
-    do_test pesign yes yes
-    do_test gnu-efi yes yes
+    do_test pesign yes yes master
+    do_test gnu-efi yes yes master
     ;;
 efibootmgr)
-    do_test efivar yes yes
+    do_test efivar yes yes master
     ;;
 *)
     echo "Unknown test subject" 1>&2
