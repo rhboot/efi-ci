@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos:centos7
 MAINTAINER Peter Jones <pjones@redhat.com>
 
 RUN dnf --nodocs -y --best --allowerasing install @buildsys-build dnf-plugins-core git make popt-devel nss-devel nspr-devel gettext elfutils-libelf-devel make gcc binutils
