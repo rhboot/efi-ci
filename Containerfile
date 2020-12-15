@@ -1,8 +1,16 @@
 FROM centos:centos8
 MAINTAINER Peter Jones <pjones@redhat.com>
 
-RUN dnf --nodocs -y --best --allowerasing install @buildsys-build ccache dnf-plugins-core git make popt-devel nss-devel nspr-devel gettext elfutils-libelf-devel make gcc binutils clang-analyzer binutils-aarch64-linux-gnu binutils-arm-linux-gnu binutils-x86_64-linux-gnu gcc-aarch64-linux-gnu gcc-arm-linux-gnu gcc-x86_64-linux-gnu mingw32-binutils mingw32-gcc mingw64-binutils mingw64-gcc
-RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign 'shim-unsigned*'
+COPY local.repo epel.repo /etc/yum.repos.d/
+COPY RPM-GPG-KEY-EPEL-8 /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
+COPY repo/ /root/repo/
+RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
+RUN dnf --nodocs -y --best --allowerasing install epel-release epel-rpm-macros
+RUN dnf --nodocs -y --best --allowerasing install binutils ccache clang-analyzer dnf-plugins-core elfutils-libelf-devel fedpkg-minimal gcc gettext git make popt-devel nspr-devel nss-devel rpm-build
+# builddep on shim-unsigned-* doesn't work and I want this to be arch-agnostic, so manually add them by name
+RUN dnf --nodocs -y --best --allowerasing install elfutils-libelf-devel git gnu-efi gnu-efi-devel openssl openssl-devel pesign
+RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign
+RUN rm -r /root/repo/ /etc/yum.repos.d/local.repo
 RUN dnf -y clean all
 
 RUN rm -rf /usr/share/doc/* /usr/share/man/*
