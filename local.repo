@@ -1,0 +1,17 @@
+[local]
+name=local builddeps
+baseurl=file:///root/repo/$basearch/
+enabled=1
+metadata_expire=1d
+type=rpm-md
+gpgcheck=0
+repo_gpgcheck=0
+
+[local-source]
+name=local builddeps - Source
+baseurl=file:///root/repo/SOURCES/
+enabled=0
+metadata_expire=1d
+type=rpm-md
+gpgcheck=0
+cost=999
