@@ -1,4 +1,6 @@
-FROM fedora:33
+ARG ARCH=
+ARG LARCH=
+FROM ${ARCH}fedora:33
 MAINTAINER Peter Jones <pjones@redhat.com>
 
 RUN dnf --nodocs -y --best --allowerasing install @buildsys-build ccache dnf-plugins-core git make popt-devel nss-devel nspr-devel gettext elfutils-libelf-devel make gcc binutils clang-analyzer binutils-aarch64-linux-gnu binutils-arm-linux-gnu binutils-x86_64-linux-gnu gcc-aarch64-linux-gnu gcc-arm-linux-gnu gcc-x86_64-linux-gnu mingw32-binutils mingw32-gcc mingw64-binutils mingw64-gcc
