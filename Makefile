@@ -3,28 +3,70 @@
 # Peter Jones, 2021-02-01 13:56
 #
 
+RELEASE ?= f34
+
 LARCH ?= $(shell $(CC) -dumpmachine | cut -f1 -d- | sed -e s,i[3456789]86,i686,)
-EARCH ?= $(shell $(CC) -dumpmachine | cut -f1 -d- | sed -e s,i[3456789]86,ia32, -e s,aarch64,aa64, -e s,x86_64,x64,)
-DARCH ?= $(shell $(CC) -dumpmachine | cut -f1 -d- | sed -e s,i[3456789]86,i686, -e s,aarch64,arm64v8, -e s,x86_64,amd64,)
 
+get_efi_arch = $(shell echo -n "${1}" | sed -e s,aarch64,aa64, -e s,x86_64,x64,)
+get_docker_arch = $(shell echo -n "${1}" | sed -e s,aarch64,arm64v8, -e s,x86_64,amd64,)
+get_manifest_arch = $(shell echo -n "${1}" | sed -e s,aarch64,arm64, -e s,x86_64,amd64,)
 
-all: image manifest
+EARCH = $(call get_efi_arch,$(LARCH))
+DARCH = $(call get_docker_arch,$(LARCH))
+MARCH = $(call get_manifest_arch,$(LARCH))
 
-image:
-	podman build -t vathpela/efi-ci:f33-$(EARCH) -f Containerfile \
-		--build-arg ARCH=$(DARCH)/ \
-		--build-arg LARCH=$(LARCH)
-	podman push vathpela/efi-ci:f33-$(EARCH) docker://vathpela/efi-ci:f33-$(EARCH)
+ARCHES := aarch64 x86_64
 
+all: update
 
-manifest:
-	podman manifest create \
-		vathpela/efi-ci:f34 \
-		--amend vathpela/efi-ci:f34-aa64 \
-		--amend vathpela/efi-ci:f34-x64
-	podman manifest push docker://vathpela/efi-ci:f34
+image-create:
+	podman build -t "vathpela/efi-ci:$(RELEASE)-$(EARCH)" -f Containerfile \
+		--build-arg ARCH=$(DARCH)/
 
-.ONESHELL: all manifest
+image-pull:
+	$(foreach ARCH, $(ARCHES),\
+		podman pull --override-arch "$(call get_manifest_arch,$(ARCH))" \
+			"docker://vathpela/efi-ci:$(RELEASE)-$(call get_efi_arch,$(ARCH))" ; \
+		)
+
+image-push:
+	podman push "vathpela/efi-ci:$(RELEASE)-$(EARCH)" "docker://vathpela/efi-ci:$(RELEASE)-$(EARCH)"
+
+manifest-remove:
+	podman rmi "vathpela/efi-ci:$(RELEASE)"
+
+manifest-create:
+	podman manifest create "vathpela/efi-ci:$(RELEASE)"
+
+manifest-pull:
+	$(foreach ARCH, $(ARCHES),\
+		podman pull --override-arch "$(call get_manifest_arch,$(ARCH))" \
+			"docker://vathpela/efi-ci:$(RELEASE)" ; \
+		)
+
+manifest-clean:
+	podman manifest inspect "vathpela/efi-ci:$(RELEASE)" \
+	| grep -B5 '"architecture": "$(MARCH)"' \
+	| grep '"digest":' \
+	| cut -d'"' -f4 \
+	| xargs -r -n1 podman manifest remove "vathpela/efi-ci:$(RELEASE)"
+
+manifest-add:
+	podman manifest add "vathpela/efi-ci:$(RELEASE)" "docker://vathpela/efi-ci:$(RELEASE)-$(EARCH)"
+
+manifest-push:
+	podman manifest push --all "vathpela/efi-ci:$(RELEASE)" "docker://vathpela/efi-ci:$(RELEASE)"
+
+update:
+	$(MAKE) image-pull || :
+	$(MAKE) manifest-remove || :
+	$(MAKE) manifest-create
+	$(MAKE) image-create image-push
+	$(MAKE) manifest-add EARCH=x64 || :
+	$(MAKE) manifest-add EARCH=aa64 || :
+	$(MAKE) manifest-push
+
+.ONESHELL: update
 
 # vim:ft=make
 #
