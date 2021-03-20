@@ -57,6 +57,12 @@ manifest-add:
 manifest-push:
 	podman manifest push --all "vathpela/efi-ci:$(RELEASE)" "docker://vathpela/efi-ci:$(RELEASE)"
 
+local-update:
+	$(MAKE) image-pull || :
+	$(MAKE) manifest-remove || :
+	$(MAKE) manifest-create
+	$(MAKE) image-create
+
 update:
 	$(MAKE) image-pull || :
 	$(MAKE) manifest-remove || :
