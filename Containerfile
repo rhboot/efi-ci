@@ -11,7 +11,6 @@ RUN dnf --nodocs -y --best --allowerasing install binutils ccache clang-analyzer
 # builddep on shim-unsigned-* doesn't work and I want this to be arch-agnostic, so manually add them by name
 RUN dnf --nodocs -y --best --allowerasing install elfutils-libelf-devel git gnu-efi gnu-efi-devel openssl openssl-devel pesign
 RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign
-RUN dnf --nodocs -y --best --allowerasing ccache
 RUN rm -r /root/repo/ /etc/yum.repos.d/local.repo
 RUN dnf -y clean all
 
