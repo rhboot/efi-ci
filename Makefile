@@ -19,8 +19,16 @@ ARCHES := aarch64 x86_64
 
 all: update
 
+build-git:
+	podman build -t "vathpela/efi-ci:$(RELEASE)-$(EARCH)" -f build-git.Containerfile \
+		--volume $(abspath .)/build:/root/build:Z \
+		--volume $(abspath .)/repo:/root/repo:Z \
+		--build-arg ARCH=$(DARCH)/
+
 image-create:
 	podman build -t "vathpela/efi-ci:$(RELEASE)-$(EARCH)" -f Containerfile \
+		--volume $(abspath .)/build:/root/build:Z \
+		--volume $(abspath .)/repo:/root/repo:Z \
 		--build-arg ARCH=$(DARCH)/
 
 image-pull:
@@ -56,6 +64,12 @@ manifest-add:
 
 manifest-push:
 	podman manifest push --all "vathpela/efi-ci:$(RELEASE)" "docker://vathpela/efi-ci:$(RELEASE)"
+
+git:
+	$(MAKE) image-pull || :
+	$(MAKE) manifest-remove || :
+	$(MAKE) manifest-create
+	$(MAKE) build-git
 
 update:
 	$(MAKE) image-pull || :
