@@ -71,6 +71,12 @@ git:
 	$(MAKE) manifest-create
 	$(MAKE) build-git
 
+local-update:
+	$(MAKE) image-pull || :
+	$(MAKE) manifest-remove || :
+	$(MAKE) manifest-create
+	$(MAKE) image-create
+
 update:
 	$(MAKE) image-pull || :
 	$(MAKE) manifest-remove || :
