@@ -33,7 +33,7 @@ image-create:
 
 image-pull:
 	$(foreach ARCH, $(ARCHES),\
-		podman pull --override-arch "$(call get_manifest_arch,$(ARCH))" \
+		podman pull --arch "$(call get_manifest_arch,$(ARCH))" \
 			"docker://vathpela/efi-ci:$(RELEASE)-$(call get_efi_arch,$(ARCH))" ; \
 		)
 
@@ -48,7 +48,7 @@ manifest-create:
 
 manifest-pull:
 	$(foreach ARCH, $(ARCHES),\
-		podman pull --override-arch "$(call get_manifest_arch,$(ARCH))" \
+		podman pull --arch "$(call get_manifest_arch,$(ARCH))" \
 			"docker://vathpela/efi-ci:$(RELEASE)" ; \
 		)
 
