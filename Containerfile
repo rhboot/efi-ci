@@ -2,9 +2,10 @@ ARG ARCH=
 FROM ${ARCH}fedora:35
 MAINTAINER Peter Jones <pjones@redhat.com>
 
-RUN dnf --nodocs -y --best --allowerasing --disablerepo='*' --enablerepo=rawhide install dnf-plugins-core
+RUN dnf --nodocs -y --best --allowerasing --disablerepo='*' --enablerepo=fedora --enablerepo=updates install dnf-plugins-core
 RUN dnf config-manager --set-disabled '*'
-RUN dnf config-manager --set-enabled rawhide
+RUN dnf config-manager --set-enabled fedora
+RUN dnf config-manager --set-enabled updates
 # increment this to force an update
 RUN echo 1
 RUN dnf --nodocs -y --best --allowerasing update
