@@ -6,7 +6,9 @@ RUN dnf --nodocs -y --best --allowerasing --disablerepo='*' --enablerepo=fedora 
 RUN dnf config-manager --set-disabled '*'
 RUN dnf config-manager --set-enabled fedora updates
 RUN dnf --nodocs -y --best --allowerasing install @buildsys-build ccache git make popt-devel nss-devel nspr-devel gettext elfutils-libelf-devel make gcc binutils clang-analyzer 'binutils-*-linux-gnu' 'gcc-*-linux-gnu' 'mingw*-binutils' 'mingw*-gcc' efivar-devel
-RUN dnf --nodocs -y --best --allowerasing builddep efivar pesign 'shim-unsigned*'
+# builddep on shim-unsigned-* doesn't work and I want this to be arch-agnostic, so manually add them by name
+RUN dnf --nodocs -y --best --allowerasing install elfutils-libelf-devel git gnu-efi gnu-efi-devel openssl openssl-devel pesign
+RUN dnf --nodocs -y --best --allowerasing builddep efivar pesign
 RUN dnf --nodocs -y --best --allowerasing install qemu-user-static docker ccache vim-enhanced mandoc
 RUN dnf --nodocs -y --best --allowerasing install glibc-devel.i686 efivar-devel.i686 || :
 # increment this to force an update
