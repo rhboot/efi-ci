@@ -11,7 +11,7 @@ RUN dnf --nodocs -y --best --allowerasing install binutils ccache clang-analyzer
 # builddep on shim-unsigned-* doesn't work and I want this to be arch-agnostic, so manually add them by name
 RUN dnf --nodocs -y --best --allowerasing install elfutils-libelf-devel git gnu-efi gnu-efi-devel openssl openssl-devel pesign
 RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign
-RUN dnf --nodocs -y --best --allowerasing install vim-enhanced
+RUN dnf --nodocs -y --best --allowerasing install vim-enhanced mandoc
 RUN dnf --nodocs -y --best --allowerasing install glibc-devel.i686 efivar-devel.i686 || :
 RUN rpm -qa 'gnu-efi*' --qf '%{name}\n' | xargs -r rpm -e
 RUN rm -r /root/repo/ /etc/yum.repos.d/local.repo
