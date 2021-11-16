@@ -1,22 +1,27 @@
 ARG ARCH=
-FROM ${ARCH}centos:centos8
+FROM centos:stream9
 MAINTAINER Peter Jones <pjones@redhat.com>
 
-COPY local.repo epel.repo /etc/yum.repos.d/
-COPY RPM-GPG-KEY-EPEL-8 /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
-COPY repo/ /root/repo/
-RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
-RUN dnf --nodocs -y --best --allowerasing install epel-release epel-rpm-macros
-RUN dnf --nodocs -y --best --allowerasing install binutils ccache clang-analyzer dnf-plugins-core elfutils-libelf-devel fedpkg-minimal gcc gettext git make popt-devel nspr-devel nss-devel rpm-build efivar-devel
+RUN echo 0
+COPY epel.repo epel-next.repo local.repo /etc/yum.repos.d/
+COPY RPM-GPG-KEY-EPEL-9 /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-9
+RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-9
+RUN dnf --nodocs -y --best --allowerasing install dnf-plugins-core
+RUN dnf config-manager --set-enabled appstream
+RUN dnf config-manager --set-enabled crb
+RUN dnf config-manager --set-enabled epel-next
+RUN dnf config-manager --set-enabled epel
+RUN dnf --nodocs -y --best --allowerasing install epel-release epel-next-release epel-rpm-macros
+RUN dnf --nodocs -y --best --allowerasing install binutils clang-analyzer elfutils-libelf-devel gcc gettext git make popt-devel nspr-devel nss-devel rpm-build
 # builddep on shim-unsigned-* doesn't work and I want this to be arch-agnostic, so manually add them by name
 RUN dnf --nodocs -y --best --allowerasing install elfutils-libelf-devel git gnu-efi gnu-efi-devel openssl openssl-devel pesign
 RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign
-RUN dnf --nodocs -y --best --allowerasing install vim-enhanced mandoc
+RUN dnf --nodocs -y --best --allowerasing install vim-enhanced mandoc grub2-tools-minimal
 RUN dnf --nodocs -y --best --allowerasing install glibc-devel.i686 efivar-devel.i686 || :
 RUN dnf --nodocs -y --best --allowerasing install openssl-devel
 RUN dnf --nodocs -y --best --allowerasing install gpg
 RUN rpm -qa 'gnu-efi*' --qf '%{name}\n' | xargs -r rpm -e
-RUN rm -r /root/repo/ /etc/yum.repos.d/local.repo
+# RUN rm -r /root/repo/ /etc/yum.repos.d/local.repo
 RUN dnf -y clean all
 
 RUN rm -rf /usr/share/doc/* /usr/share/man/*
