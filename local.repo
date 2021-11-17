@@ -1,6 +1,6 @@
 [local]
 name=local builddeps
-baseurl=https://pjones.fedorapeople.org/efi-ci/centos9/$basearch/
+baseurl=https://pjones.fedorapeople.org/efi-ci/centos10/$basearch/
 enabled=1
 metadata_expire=1d
 type=rpm-md
@@ -9,7 +9,7 @@ repo_gpgcheck=0
 
 [local-source]
 name=local builddeps - Source
-baseurl=https://pjones.fedorapeople.org/efi-ci/centos9/SOURCES/
+baseurl=https://pjones.fedorapeople.org/efi-ci/centos10/SOURCES/
 enabled=0
 metadata_expire=1d
 type=rpm-md
