@@ -3,7 +3,7 @@
 # Peter Jones, 2021-02-01 13:56
 #
 
-RELEASE ?= f39
+RELEASE ?= f40
 
 LARCH ?= $(shell $(CC) -dumpmachine | cut -f1 -d- | sed -e s,i[3456789]86,i686,)
 
