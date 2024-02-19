@@ -7,7 +7,7 @@ RUN dnf --releasever=38 config-manager --set-disabled '*'
 RUN dnf --releasever=38 config-manager --set-enabled fedora
 RUN dnf --releasever=38 config-manager --set-enabled updates
 # increment this to force an update
-RUN echo 2
+RUN echo 3
 RUN dnf --releasever=38 --nodocs -y --best --allowerasing update
 RUN dnf --releasever=38 --nodocs -y --best --allowerasing install @buildsys-build ccache git make popt-devel nss-devel nspr-devel gettext elfutils-libelf-devel make gcc binutils clang-analyzer 'binutils-*-linux-gnu' 'gcc-*-linux-gnu' 'mingw*-binutils' 'mingw*-gcc'
 RUN dnf --releasever=38 --nodocs -y --best --allowerasing builddep efivar pesign 'shim-unsigned*'
