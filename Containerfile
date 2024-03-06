@@ -13,6 +13,7 @@ RUN dnf --releasever=39 --nodocs -y --best --allowerasing install @buildsys-buil
 RUN dnf --releasever=39 --nodocs -y --best --allowerasing builddep efivar pesign 'shim-unsigned*'
 RUN dnf --releasever=39 --nodocs -y --best --allowerasing install qemu-user-static docker vim-enhanced efivar-devel mandoc
 RUN dnf --releasever=39 --nodocs -y --best --allowerasing install glibc-devel.i686 efivar-devel.i686 || :
+RUN dnf --releasever=39 --nodocs -y --best --allowerasing install grub2-tools-minimal
 RUN rpm -qa 'gnu-efi*' --qf '%{name}\n' | xargs -r rpm -e
 RUN dnf --releasever=39 -y clean all
 
