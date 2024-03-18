@@ -2,7 +2,8 @@ ARG ARCH=
 FROM ${ARCH}fedora:40
 MAINTAINER Peter Jones <pjones@redhat.com>
 
-RUN dnf --releasever=40 --nodocs -y --best --allowerasing --disablerepo='*' --enablerepo=fedora --enablerepo=updates install dnf-plugins-core
+RUN echo 1
+RUN dnf --releasever=40 --nodocs -y --best --allowerasing --disablerepo='*' --enablerepo=fedora --enablerepo=updates install dnf-plugins-core glib2
 RUN dnf --releasever=40 config-manager --set-disabled '*'
 RUN dnf --releasever=40 config-manager --set-enabled fedora
 RUN dnf --releasever=40 config-manager --set-enabled updates
