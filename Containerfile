@@ -18,6 +18,7 @@ RUN dnf-3 --releasever=41 --nodocs -y --best --allowerasing install glibc-devel.
 RUN dnf-3 --releasever=41 --nodocs -y --best --allowerasing install glibc32 || :
 RUN dnf-3 --releasever=41 --nodocs -y --best --allowerasing install grub2-tools-minimal
 RUN dnf-3 --releasever=41 --nodocs -y --best --allowerasing install meson ninja-build
+RUN dnf-3 --releasever=41 --nodocs -y --best --allowerasing install bear
 RUN rpm -qa 'gnu-efi*' --qf '%{name}\n' | xargs -r rpm -e
 RUN dnf-3 --releasever=41 -y clean all
 
