@@ -13,6 +13,7 @@ RUN dnf --nodocs -y --best --allowerasing install elfutils-libelf-devel git gnu-
 RUN dnf --nodocs -y --best --allowerasing builddep efivar gnu-efi pesign
 RUN dnf --nodocs -y --best --allowerasing install vim-enhanced mandoc
 RUN dnf --nodocs -y --best --allowerasing install glibc-devel.i686 efivar-devel.i686 || :
+RUN dnf --nodocs -y --best --allowerasing install openssl-devel
 RUN rpm -qa 'gnu-efi*' --qf '%{name}\n' | xargs -r rpm -e
 RUN rm -r /root/repo/ /etc/yum.repos.d/local.repo
 RUN dnf -y clean all
