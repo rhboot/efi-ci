@@ -22,6 +22,7 @@ RUN dnf-3 --releasever=43 --nodocs -y --best --allowerasing install bear
 RUN dnf-3 --releasever=43 --nodocs -y --best --allowerasing install openssl-devel
 RUN dnf-3 --releasever=43 --nodocs -y --best --allowerasing install libatomic
 RUN dnf-3 --releasever=43 --nodocs -y --best --allowerasing install libatomic.i686 || :
+RUN dnf-3 --releasever=43 --nodocs -y --best --allowerasing install gpg
 RUN rpm -qa 'gnu-efi*' --qf '%{name}\n' | xargs -r rpm -e
 RUN dnf-3 --releasever=43 -y clean all
 
